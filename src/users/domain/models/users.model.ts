@@ -1,4 +1,4 @@
-import Modoo from '../base_models/modoo';
+import Modoo from '../../../base_models/modoo';
 import {Redis} from '../helpers/redis';
 
 export class UsersModel extends Modoo {
@@ -20,7 +20,42 @@ export class UsersModel extends Modoo {
     }
 
     async storeAddressUser(request: any) {
+        if (typeof request.x_default_address_id !== 'undefined' && request.x_default_address ===  1) {
+            await this.odooUpdate('x_address', parseInt(request.x_default_address_id), { x_default_address: 0 });
+        }
         const status = await this.odooCreate('x_address', request);
+        if (status > 0) {
+            const address = await this.odooSearchRead('x_address', [['x_partner_id', '=', parseInt(request.x_partner_id)]], []);
+            await this.redis.setRedis('ADDRESS_' + request.x_partner_id, address);
+        }
+        return status;
+    }
+
+    async updateAddressUser(request: any) {
+        if (typeof request.x_default_address_id !== 'undefined' && request.x_default_address ===  1) {
+            if (request.x_default_address_id !== request.id) {
+                await this.odooUpdate('x_address', parseInt(request.x_default_address_id), { x_default_address: 0 });
+            }
+        }
+        if (typeof request.x_default_address_id !== 'undefined' && request.x_default_address !== 'undefined') {
+            if (request.x_default_address_id === request.address_id) {
+                request.x_default_address = 1;
+            }
+        }
+        const status = await this.odooUpdate('x_address', parseInt(request.address_id), request);
+        if (status === true) {
+            const address = await this.odooSearchRead('x_address', [['x_partner_id', '=', parseInt(request.x_partner_id)]], []);
+            await this.redis.setRedis('ADDRESS_' + request.x_partner_id, address);
+        }
+        return status;
+    }
+
+    async deleteAddressUser(request: any) {
+        const status = await this.odooDelete('x_address', parseInt(request.id));
+        if (status === true) {
+            const address = await this.odooSearchRead('x_address', [['x_partner_id', '=', parseInt(request.x_partner_id)]], []);
+            await this.redis.setRedis('ADDRESS_' + request.x_partner_id, address);
+        }
         return status;
     }
 
@@ -52,7 +87,7 @@ export class UsersModel extends Modoo {
         if (status === 1) {
             return await this.redis.getRedis('ADDRESS_' + id);
         } else {
-            const address = await this.odooSearchRead('x_address', [['x_partner_id', '=', 9]], []);
+            const address = await this.odooSearchRead('x_address', [['x_partner_id', '=', parseInt(id)]], []);
             await this.redis.setRedis('ADDRESS_' + id, address);
             return address;
         }

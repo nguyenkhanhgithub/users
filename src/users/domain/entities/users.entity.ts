@@ -19,6 +19,7 @@ export class UsersEntity {
     public x_partner_id: any;
     public x_receive_address: any;
     public x_default_address_id: any;
+    public x_phone_address: any;
 
     assignInfoFromReq(obj: UsersDto) {
         this.partner_id = obj.partner_id;
@@ -28,13 +29,18 @@ export class UsersEntity {
     }
 
     assignAddressFromReq(obj: AddressDto) {
-        this.address_id = parseInt(obj.id);
         this.x_address_name = obj.x_address_name;
         this.x_default_address = parseInt(obj.x_default_address);
         this.x_details_address = obj.x_details_address;
         this.x_name = obj.x_name;
         this.x_partner_id = parseInt(obj.x_partner_id);
         this.x_receive_address = parseInt(obj.x_receive_address);
-        this.x_default_address_id = parseInt(obj.x_default_address_id);
+        this.x_phone_address = obj.x_phone_address;
+        if (typeof obj.x_default_address_id !== 'undefined') {
+            this.x_default_address_id = parseInt(obj.x_default_address_id);
+        }
+        if (typeof obj.id !== 'undefined') {
+            this.address_id = parseInt(obj.id);
+        }
     }
 }

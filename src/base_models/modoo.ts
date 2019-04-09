@@ -87,7 +87,9 @@ class Modoo {
                     return;
                 }
 
-                self.odoo.execute_kw( model, 'create', [data], (error: any, value: any) => {
+                const params = [[data]];
+
+                self.odoo.execute_kw( model, 'create', params, (error: any, value: any) => {
                     if (error) {
                         reject(error);
                         return;

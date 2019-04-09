@@ -24,4 +24,18 @@ export class UsersRespository {
         const status = await model.storeAddressUser(userEntity);
         return status;
     }
+
+    async updateAddressUser(obj: AddressDto) {
+        const model = new UsersModel();
+        const userEntity = new UsersEntity();
+        userEntity.assignAddressFromReq(obj);
+        const status = await model.updateAddressUser(userEntity);
+        return status;
+    }
+
+    async deleteAddressUser(request: any) {
+        const model = new UsersModel();
+        const status = await model.deleteAddressUser(request);
+        return status;
+    }
 }

@@ -20,4 +20,14 @@ export class UsersService {
         const status = await this.respository.storeAddressUser(obj);
         return status;
     }
+
+    async updateAddressUser(obj: AddressDto) {
+        const status = await this.respository.updateAddressUser(obj);
+        return status;
+    }
+
+    async deleteAddressUser(request: any) {
+        const status = await this.respository.deleteAddressUser(request);
+        return status;
+    }
 }
