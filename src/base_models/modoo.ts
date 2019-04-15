@@ -156,6 +156,26 @@ class Modoo {
             });
         });
     }
+
+    odooSearchCount = (model: string, condition: any) => {
+        const self = this;
+        return new Promise( ( resolve, reject ) => {
+            self.odoo.connect( (error: any) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                const params = [[condition]];
+                self.odoo.execute_kw(model, 'search_count', params, (error: any, value: any) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+                    resolve( value );
+                });
+            });
+        });
+    }
 }
 
 export default Modoo;
