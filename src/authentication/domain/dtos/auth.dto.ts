@@ -5,7 +5,7 @@ export class LoginDto {
     username: string;
 
     @IsNotEmpty()
-    x_password: string;
+    password: string;
 }
 
 export class RegisterDto {

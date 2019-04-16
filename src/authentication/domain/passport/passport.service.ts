@@ -36,17 +36,19 @@ export default class PassportService {
     private loginLocal = (): passportLocal.Strategy => {
         return new LocalStrategy({
             usernameField: 'username',
-            passwordField: 'x_password',
+            passwordField: 'password',
             passReqToCallback: true,
-        }, async (req, username, x_password, done: (error: any, value?: any) => void) => {
+        }, async (req, username, password, done: (error: any, value?: any) => void) => {
             const requests: any = {
                 username: username
             };
-            const obj = await this.model.loginLocal(requests);
+            const obj: any = await this.model.loginLocal(requests);
             if (Object.entries(obj).length !== 0) {
-                const isPasswordMatching = await bcrypt.compare(x_password, obj[0].x_password);
+                const isPasswordMatching = await bcrypt.compare(password, obj[0].x_password);
                 if (isPasswordMatching === true) {
                     delete obj[0].x_password;
+                    obj[0].status = 1;
+                    obj[0].partner_id = obj[0].partner_id[0];
                     return done(null, obj[0]);
                 } else {
                     return done(null, false);

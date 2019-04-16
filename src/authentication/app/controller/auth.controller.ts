@@ -15,12 +15,16 @@ export class AuthController {
         return result;
     }
 
+    @ApiOperation({title: 'Active account'})
+    @ApiResponse({status: 200, description: 'Active account'})
     @Post('vertify')
     async vertify(@Body() obj: VertifyDto) {
         const status = await this.authService.vertify(obj);
         return status;
     }
 
+    @ApiOperation({title: 'Active link'})
+    @ApiResponse({status: 200, description: 'Active link'})
     @Get('vertify_link')
     async vertifyLink(@Req() req) {
         const status = await this.authService.vertifyLink(req);

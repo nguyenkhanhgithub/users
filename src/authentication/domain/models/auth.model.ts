@@ -14,9 +14,9 @@ export class AuthModel {
     async loginLocal(request: any) {
         const condition = (valid.regexPhoneNumber(request.username) === true) ? ['phone' , '=', request.username] : ['email', '=', request.username];
         const obj = await this.odoo.odooSearchRead(
-            'res.partner',
+            'res.users',
             [condition],
-            ['id', 'name', 'email', 'phone', 'x_password', 'seller', 'x_vertify', 'x_state', 'user_ids']
+            ['id', 'name', 'email', 'phone', 'x_password', 'seller', 'x_vertify', 'x_state', 'partner_id']
         );
         return obj;
     }
@@ -25,6 +25,7 @@ export class AuthModel {
         const obj = await this.loginLocal(request);
         if (Object.entries(obj).length > 0) {
             delete obj[0].x_password;
+            obj[0].status = 1;
         }
         return obj;
     }

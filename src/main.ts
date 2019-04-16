@@ -8,6 +8,12 @@ async function bootstrap() {
   dotenv.config();
   const PORT = process.env.PORT || 4000;
   const app = await NestFactory.create(AppModule);
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
+    next();
+  });
   const passport = new PassportService();
   app.useGlobalPipes(new ValidationPipe());
   app.use(passport.initialize());
