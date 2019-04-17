@@ -20,17 +20,30 @@ export class UsersRespository {
     async storeAddressUser(obj: AddressDto) {
         this.userEntity.assignAddressFromReq(obj);
         const status = await this.model.storeAddressUser(this.userEntity);
-        return status;
+        let address: any = [];
+        if (status > 0) {
+            address = await this.getAddressUser(obj.x_partner_id);
+        }
+        return address;
     }
 
     async updateAddressUser(obj: AddressDto) {
         this.userEntity.assignAddressFromReq(obj);
         const status = await this.model.updateAddressUser(this.userEntity);
-        return status;
+        let address: any = [];
+        if (status > 0) {
+            address = await this.getAddressUser(obj.x_partner_id);
+        }
+        return address;
     }
 
     async deleteAddressUser(request: any) {
         const status = await this.model.deleteAddressUser(request);
         return status;
+    }
+
+    async getAddressUser(partner_id: any) {
+        const address = await this.model.getAddressUser(partner_id);
+        return address;
     }
 }

@@ -21,6 +21,14 @@ export class CartRepository {
                 img: 'https://cp.chozoi.com/public/ImgProduct/205/anh0.jpeg',
                 name: 'Ghe Xau',
                 price: 2000000,
+                qty: 255,
+                url: 'Ghe_rat_dep_206',
+            },
+            {
+                id: 123,
+                img: 'https://cp.chozoi.com/public/ImgProduct/205/anh0.jpeg',
+                name: 'Ghe Xau',
+                price: 2000000,
                 qty: 16,
                 url: 'Ghe_rat_dep_206',
             }
@@ -36,5 +44,10 @@ export class CartRepository {
         }
         result = this.model.getCart(id, cart);
         return result;
+    }
+
+    deleteItem = async (id: any, partner_id: any) => {
+        const obj = this.model.deleteItem(id, partner_id);
+        return obj;
     }
 }

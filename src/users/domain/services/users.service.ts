@@ -6,27 +6,27 @@ import {AddressDto, UsersDto} from '../dtos/users.dto';
 export class UsersService {
     constructor(private readonly respository: UsersRespository ) {}
 
-    async getProfileUser(id: any) {
+    getProfileUser = async (id: any) => {
         const obj = await this.respository.getProfileUser(id);
         return obj;
     }
 
-    async updateInfoUser(obj: UsersDto) {
+    updateInfoUser = async (obj: UsersDto) => {
         const status = await this.respository.updateInfoUser(obj);
         return status;
     }
 
-    async storeAddressUser(obj: AddressDto) {
+    storeAddressUser = async (obj: AddressDto) => {
         const status = await this.respository.storeAddressUser(obj);
         return status;
     }
 
-    async updateAddressUser(obj: AddressDto) {
+    updateAddressUser = async (obj: AddressDto) => {
         const status = await this.respository.updateAddressUser(obj);
         return status;
     }
 
-    async deleteAddressUser(request: any) {
+    deleteAddressUser = async (request: any) => {
         const status = await this.respository.deleteAddressUser(request);
         return status;
     }

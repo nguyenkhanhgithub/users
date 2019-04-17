@@ -8,4 +8,9 @@ export class CartService {
         const obj = this.respository.getCart(id, req);
         return obj;
     }
+
+    deleteItem = async (id: any, partner_id: any) => {
+        const obj = this.respository.deleteItem(id, partner_id);
+        return obj;
+    }
 }
