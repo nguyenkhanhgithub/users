@@ -254,8 +254,8 @@ export default class PassportService {
     }
 
     private sendEmailVertify = async (request: any, active_code: any) => {
-        const ciphertext = CryptoJS.AES.encrypt(active_code, 'SECRET_KEY' + active_code).toString();
-        const bytes = CryptoJS.AES.decrypt(ciphertext.toString(), 'SECRET_KEY' + active_code).toString();
+        const ciphertext = CryptoJS.AES.encrypt(request.username, 'SECRET_KEY' + request.username).toString();
+        const bytes = CryptoJS.AES.decrypt(ciphertext.toString(), 'SECRET_KEY' + request.username).toString();
         const active_link = `${process.env.APP_URL}/auth/vertify_link?active=` + bytes + '&expire=3600';
         await this.redis.setRedis(bytes, request, 3600);
         const contxt = {
