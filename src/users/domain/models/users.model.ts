@@ -3,7 +3,12 @@ import {Redis} from '../../../helpers/redis';
 
 export class UsersModel extends Modoo {
 
-    public redis = new Redis();
+    private redis = new Redis();
+    private address_fields = [
+        'x_details_address', 'x_partner_id',
+        'x_name', 'id', 'x_receive_address',
+        'x_default_address', 'x_address_name', 'x_phone_address',
+    ];
 
     async updateUserInfo(request: any) {
         const id = request.partner_id;
@@ -58,7 +63,7 @@ export class UsersModel extends Modoo {
     }
 
     async getAddressUser(id: any) {
-        const address = await this.odooSearchRead('x_address', [['x_partner_id', '=', parseInt(id)]], []);
+        const address = await this.odooSearchRead('x_address', [['x_partner_id', '=', parseInt(id)]], this.address_fields);
         return address;
     }
 }
