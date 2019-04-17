@@ -9,6 +9,7 @@ import * as CryptoJS from 'crypto-js';
 import {AuthModel} from '../models/auth.model';
 import {Redis} from '../../../helpers/redis';
 import validate from '../../../helpers/validate';
+import {MailService} from '../mail/mail.service';
 
 const LocalStrategy = passportLocal.Strategy;
 const FacebookStrategy = passportFacebook.Strategy;
@@ -18,6 +19,7 @@ export default class PassportService {
 
     public model = new AuthModel();
     public redis = new Redis();
+    public mailService = new MailService();
     public prefix = 'MIDAS_';
 
     public initialize = () => {
@@ -190,7 +192,7 @@ export default class PassportService {
                 const obj = await this.redis.getRedis(`REG_EMAIL_CODE` + request.username + request.active_code);
                 const result = await this.model.storeUser(obj);
                 if (result > 0) {
-                    await this.redis.delRedis(`REG_PHONE_OTP` + request.username + request.active_code);
+                    await this.redis.delRedis(`REG_EMAIL_CODE` + request.username + request.active_code);
                     done.data = result;
                     done.message = `${this.prefix}REG_SUCCESS`;
                 }
@@ -235,10 +237,12 @@ export default class PassportService {
             message: null,
         }
         if (status === 1) {
-            const obj = await this.redis.getRedis(key);
+            let obj: any;
+            obj = await this.redis.getRedis(key);
             const stt = await this.model.storeUser(obj);
             if (stt > 0) {
                 await this.redis.delRedis(key);
+                await this.redis.delRedis(`REG_EMAIL_CODE` + obj.username + obj.active_code);
                 done.data = stt;
                 done.message = `${this.prefix}REG_SUCCESS`;
             }
@@ -254,6 +258,11 @@ export default class PassportService {
         const bytes = CryptoJS.AES.decrypt(ciphertext.toString(), 'SECRET_KEY' + active_code).toString();
         const active_link = `${process.env.APP_URL}/auth/vertify_link?active=` + bytes + '&expire=3600';
         await this.redis.setRedis(bytes, request, 3600);
+        const contxt = {
+            code: active_code,
+            link: active_link
+        }
+        this.mailService.sendMail(request.username, 'Email xác thực tài khoản', contxt, 'verification');
         let status: any;
         (await this.redis.checkRedis(bytes) === 1) ? status = true : status = false;
         return new Promise<boolean>( async (resolve, reject) => {

@@ -36,7 +36,13 @@ export class AuthRepository {
                     reject(error);
                     return;
                 }
-                resolve(value);
+                let message: any;
+                if (value.data === null) {
+                    message = 'Link kích hoạt tài khoản đã hết hiệu lực.';
+                } else {
+                    message = 'Tài khoản của bạn đã được kích hoạt';
+                }
+                resolve(message);
             });
         });
     }

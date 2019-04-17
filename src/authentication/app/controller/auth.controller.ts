@@ -2,11 +2,14 @@ import {Body, Controller, Get, Post, Req, Res} from '@nestjs/common';
 import {ApiOperation, ApiResponse} from '@nestjs/swagger';
 import {LoginDto, RegisterDto, VertifyDto} from '../../domain/dtos/auth.dto';
 import {AuthService} from '../../domain/services/auth.service';
+import {MailService} from '../../domain/mail/mail.service';
 
 @Controller('auth')
 export class AuthController {
-
-    constructor(private readonly authService: AuthService) {}
+    public mailService = new MailService();
+    constructor(
+        private readonly authService: AuthService,
+    ) {}
     @ApiOperation({title: 'login authentication'})
     @ApiResponse({status: 200, description: 'login authentication'})
     @Post('register')
@@ -38,6 +41,7 @@ export class AuthController {
         const result = await this.authService.loginLocal(login, req);
         return result;
     }
+
     @ApiOperation({title: 'Facebook passport authentication'})
     @ApiResponse({status: 200, description: 'Facebook passport authentication'})
     @Get('facebook')
@@ -46,6 +50,7 @@ export class AuthController {
             res.send({statusCode: 200, data: value});
         });
     }
+
     @ApiOperation({title: 'Google passport authentication'})
     @ApiResponse({status: 200, description: 'Google passport authentication'})
     @Get('google')
