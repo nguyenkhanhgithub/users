@@ -2,11 +2,9 @@ import {Body, Controller, Get, Post, Req, Res} from '@nestjs/common';
 import {ApiOperation, ApiResponse} from '@nestjs/swagger';
 import {LoginDto, RegisterDto, VertifyDto} from '../../domain/dtos/auth.dto';
 import {AuthService} from '../../domain/services/auth.service';
-import {MailService} from '../../domain/mail/mail.service';
 
 @Controller('auth')
 export class AuthController {
-    public mailService = new MailService();
     constructor(
         private readonly authService: AuthService,
     ) {}

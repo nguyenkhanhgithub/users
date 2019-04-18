@@ -3,8 +3,12 @@ dotenv.config();
 import Odoo = require('odoo-xmlrpc');
 
 class Modoo {
-
-    public odoo = new Odoo({
+    private constructor() {}
+    private static instance: Modoo;
+    public static get Instance(): Modoo {
+        return this.instance || (this.instance = new Modoo());
+    }
+    private odoo = new Odoo({
         url: process.env.ODOO_URL,
         db: process.env.ODOO_DB,
         username: process.env.ODOO_USERNAME,

@@ -1,4 +1,4 @@
-import {Redis} from '../../../helpers/redis';
+import {Redis} from '../../../supports/helpers/redis';
 import * as lodash from 'lodash';
 
 export class CartModel {

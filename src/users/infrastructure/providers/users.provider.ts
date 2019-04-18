@@ -1,6 +1,6 @@
 import {Connection} from 'typeorm';
 import {UsersEntity} from '../../domain/entities/users.entity';
-import {UsersRespository} from '../../domain/respository/users.respository';
+import {UsersRespository} from '../../domain/repositories/users.respository';
 
 export const usersProvider = [
     // {

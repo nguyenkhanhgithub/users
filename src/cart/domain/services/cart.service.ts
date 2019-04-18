@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {CartRepository} from '../respository/cart.repository';
+import {CartRepository} from '../repositories/cart.repository';
 
 @Injectable()
 export class CartService {

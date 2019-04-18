@@ -7,8 +7,8 @@ import * as express from 'express';
 import * as bcrypt from 'bcrypt';
 import * as CryptoJS from 'crypto-js';
 import {AuthModel} from '../models/auth.model';
-import {Redis} from '../../../helpers/redis';
-import validate from '../../../helpers/validate';
+import {Redis} from '../../../supports/helpers/redis';
+import validate from '../../../supports/helpers/validate';
 import {MailService} from '../mail/mail.service';
 
 const LocalStrategy = passportLocal.Strategy;
@@ -19,7 +19,6 @@ export default class PassportService {
 
     public model = new AuthModel();
     public redis = new Redis();
-    public mailService = new MailService();
     public prefix = 'MIDAS_';
 
     public initialize = () => {
@@ -136,31 +135,13 @@ export default class PassportService {
                            username: username,
                            password: password,
                        };
-                       const res: any = {
-                           data: null,
-                           message: null,
-                       }
+                       let res: any;
                        if (validate.regexPhoneNumber(username) !== true) {
-                            // TODO: redister bang email
-                            const ACTIVE_CODE = this.generateActiveCode(10, 99);
-                            REDIS_DATA.active_code = ACTIVE_CODE;
-                            this.redis.setRedis(`REG_EMAIL_CODE` + username + ACTIVE_CODE, REDIS_DATA, 3600);
-                            // TODO: send mail o day
-                            const stt_mail = await this.sendEmailVertify(REDIS_DATA, ACTIVE_CODE);
-                            if (stt_mail === true) {
-                                res.data = stt_mail;
-                                res.message = `${this.prefix}SEND_SUCCESS`;
-                            } else {
-                                res.data = null;
-                                res.message = `${this.prefix}SEND_FALSE`;
-                            }
+                            // TODO: register bang email
+                           res = this.registerEmail(REDIS_DATA, username);
                        } else {
                             // TODO: register bang otp
-                            const OTP = 'OTP1234';
-                            REDIS_DATA.active_code = OTP;
-                            this.redis.setRedis(`REG_PHONE_OTP` + username + OTP, REDIS_DATA, 600);
-                            res.data = true
-                            res.message = `${this.prefix}SEND_SUCCESS`;
+                           res = this.registerPhone(REDIS_DATA, username);
                        }
                        return done(null, res);
                    }
@@ -169,6 +150,40 @@ export default class PassportService {
                 done(e);
             }
         });
+    }
+
+    private registerEmail = async (REDIS_DATA: any, username: any) => {
+        // TODO: redister bang email
+        const res: any = {
+            data: null,
+            message: null,
+        }
+        const ACTIVE_CODE = this.generateActiveCode(10, 99);
+        REDIS_DATA.active_code = ACTIVE_CODE;
+        this.redis.setRedis(`REG_EMAIL_CODE` + username + ACTIVE_CODE, REDIS_DATA, 3600);
+        // TODO: send mail o day
+        const stt_mail = await this.sendEmailVertify(REDIS_DATA, ACTIVE_CODE);
+        if (stt_mail === true) {
+            res.data = stt_mail;
+            res.message = `${this.prefix}SEND_SUCCESS`;
+        } else {
+            res.data = null;
+            res.message = `${this.prefix}SEND_FALSE`;
+        }
+        return res;
+    }
+
+    private registerPhone = async (REDIS_DATA: any, username: any) => {
+        const res: any = {
+            data: null,
+            message: null,
+        }
+        const OTP = 'OTP1234';
+        REDIS_DATA.active_code = OTP;
+        this.redis.setRedis(`REG_PHONE_OTP` + username + OTP, REDIS_DATA, 600);
+        res.data = true
+        res.message = `${this.prefix}SEND_SUCCESS`;
+        return res;
     }
 
     public vertifyAction = async (request: any, callBack: any) => {
@@ -260,9 +275,9 @@ export default class PassportService {
         await this.redis.setRedis(bytes, request, 3600);
         const contxt = {
             code: active_code,
-            link: active_link
-        }
-        this.mailService.sendMail(request.username, 'Email xác thực tài khoản', contxt, 'verification');
+            link: active_link,
+        };
+        MailService.Instance.sendMail(request.username, 'Email xác thực tài khoản', contxt, 'verification');
         let status: any;
         (await this.redis.checkRedis(bytes) === 1) ? status = true : status = false;
         return new Promise<boolean>( async (resolve, reject) => {

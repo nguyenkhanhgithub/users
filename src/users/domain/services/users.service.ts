@@ -1,5 +1,5 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {UsersRespository} from '../respository/users.respository';
+import {UsersRespository} from '../repositories/users.respository';
 import {AddressDto, UsersDto} from '../dtos/users.dto';
 
 @Injectable()

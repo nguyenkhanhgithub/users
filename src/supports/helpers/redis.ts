@@ -2,8 +2,8 @@ import * as redis from 'redis';
 import { Logger } from '@nestjs/common';
 
 export class Redis {
-    public client: any;
-    public prefix = 'MIDAS_REDIS_';
+    private client: any;
+    private prefix = 'MIDAS_REDIS_';
     constructor() {
         this.client = redis.createClient();
         this.client.on('error', (error: any) => {

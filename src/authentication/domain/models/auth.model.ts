@@ -1,19 +1,17 @@
-import Modoo from '../../../base_models/modoo';
-import valid from '../../../helpers/validate';
+import Modoo from '../../../supports/base_models/modoo';
+import valid from '../../../supports/helpers/validate';
 import * as bcrypt from 'bcrypt';
 
 export class AuthModel {
-    public odoo = new Modoo();
-
     async checkUser(username: any) {
         const condition = (valid.regexPhoneNumber(username) === true) ? [['phone' , '=', username]] : [['email', '=', username]];
-        const status = await this.odoo.odooSearchCount('res.partner', condition);
+        const status = await Modoo.Instance.odooSearchCount('res.partner', condition);
         return status;
     }
 
     async loginLocal(request: any) {
         const condition = (valid.regexPhoneNumber(request.username) === true) ? ['phone' , '=', request.username] : ['email', '=', request.username];
-        const obj = await this.odoo.odooSearchRead(
+        const obj = await Modoo.Instance.odooSearchRead(
             'res.users',
             [condition],
             ['id', 'name', 'email', 'phone', 'x_password', 'seller', 'x_vertify', 'x_state', 'partner_id']
@@ -59,7 +57,7 @@ export class AuthModel {
             data.phone = requests.username;
         }
 
-        const status = await this.odoo.odooCreate('res.users', data);
+        const status = await Modoo.Instance.odooCreate('res.users', data);
         if (status !== 0) {
             if (typeof requests.provider !== 'undefined') {
                 const obj = this.validateUserByEmail(requests);

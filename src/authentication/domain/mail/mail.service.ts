@@ -6,6 +6,11 @@ import * as dotenv from 'dotenv';
 
 @Injectable()
 export class MailService {
+    private static instance: MailService;
+    private constructor() {}
+    public static get Instance() {
+        return this.instance || (this.instance = new this());
+    }
     async sendMail(email: any, sub: any, contxt: any, templ: any) {
         dotenv.config();
         const transporter = nodemailer.createTransport({
